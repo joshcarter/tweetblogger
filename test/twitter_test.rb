@@ -10,16 +10,6 @@ class TwitterTest < Test::Unit::TestCase
     @user = Twitter::Base.new("foo", "foo")
   end
 
-  def canned_file(filename, format = :xml)
-    file = File::read("test/data/#{filename}.#{format}")
-    
-    case format
-    when :xml  then Hpricot.XML(file)
-    when :json then HTTParty::Parsers::JSON.decode(file)
-    else file
-    end
-  end
-  
   # Mix of behavior testing and classic TDD
   def test_statuses
     @user.expects(:request).returns(canned_file(:timeline))
