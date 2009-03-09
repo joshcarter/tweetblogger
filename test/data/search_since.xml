@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns:google="http://base.google.com/ns/1.0" xml:lang="en-US" xmlns:openSearch="http://a9.com/-/spec/opensearch/1.1/" xmlns="http://www.w3.org/2005/Atom" xmlns:twitter="http://api.twitter.com/">
+  <id>tag:search.twitter.com,2005:search/#test</id>
+  <link type="text/html" rel="alternate" href="http://search.twitter.com/search?q=%23test"/>
+  <link type="application/atom+xml" rel="self" href="http://search.twitter.com/search.atom?q=%23test&amp;since_id=1293919312"/>
+  <title>#test - Twitter Search</title>
+  <link type="application/opensearchdescription+xml" rel="search" href="http://search.twitter.com/opensearch.xml"/>
+  <link type="application/atom+xml" rel="refresh" href="http://search.twitter.com/search.atom?q=%23test&amp;since_id=1295234672"/>
+  <updated>2009-03-08T01:32:57Z</updated>
+  <openSearch:itemsPerPage>15</openSearch:itemsPerPage>
+  <entry>
+    <id>tag:search.twitter.com,2005:1294826437</id>
+    <published>2009-03-08T01:32:57Z</published>
+    <link type="text/html" rel="alternate" href="http://twitter.com/kevinashworth/statuses/1294826437"/>
+    <title>Testing the hashtag, as @stacylwhitman tells me it's called. #test #testing #icecream #dating #diebarneydie</title>
+    <content type="html">Testing the hashtag, as &lt;a href="http://twitter.com/stacylwhitman"&gt;@stacylwhitman&lt;/a&gt; tells me it's called. &lt;a href="http://search.twitter.com/search?q=%23test"&gt;&lt;b&gt;#test&lt;/b&gt;&lt;/a&gt; &lt;a href="http://search.twitter.com/search?q=%23testing"&gt;#testing&lt;/a&gt; &lt;a href="http://search.twitter.com/search?q=%23icecream"&gt;#icecream&lt;/a&gt; &lt;a href="http://search.twitter.com/search?q=%23dating"&gt;#dating&lt;/a&gt; &lt;a href="http://search.twitter.com/search?q=%23diebarneydie"&gt;#diebarneydie&lt;/a&gt;</content>
+    <updated>2009-03-08T01:32:57Z</updated>
+    <link type="image/png" rel="image" href="http://s3.amazonaws.com/twitter_production/profile_images/71302255/kevinashworth343_normal.jpg"/>
+    <twitter:source>&lt;a href="http://twitter.com/"&gt;web&lt;/a&gt;</twitter:source>
+    <author>
+      <name>kevinashworth (Kevin Ashworth)</name>
+      <uri>http://twitter.com/kevinashworth</uri>
+    </author>
+  </entry>
+</feed>
