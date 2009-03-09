@@ -3,6 +3,7 @@ blogger:
   password: fptk5rzP
   blog_id: 10881293
   login_url: https://www.google.com:443/accounts/ClientLogin
+  post_url: https://www.blogger.com/feeds/10881293/posts/default
 
 twitter:
   username: bobtheman

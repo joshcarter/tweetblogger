@@ -7,7 +7,8 @@ require 'twitter'
 
 class TwitterTest < Test::Unit::TestCase
   def setup
-    @user = Twitter::Base.new("foo", "foo")
+    @config = Configuration::load('configuration.yml')[:twitter]
+    @user = Twitter::Base.new(@config[:username], @config[:password])
   end
 
   # Mix of behavior testing and classic TDD
@@ -22,7 +23,7 @@ class TwitterTest < Test::Unit::TestCase
   end
   
   def test_statuses_since
-    @user.expects(:request).returns(canned_file(:timeline_since_small))
+    @user.expects(:request).returns(canned_file(:timeline_since))
 
     statuses = @user.timeline(:user, :since_id => '707916062')
 
@@ -35,11 +36,5 @@ class TwitterTest < Test::Unit::TestCase
     search = Twitter::Search.new('#test').fetch
     assert_equal 'kevinashworth', search['results'][0].from_user
     assert_equal 'vtld', search['results'][2].from_user
-  end
-  
-  def test_merge_statuses
-    # get search results
-    # get statuses
-    # merge into one beast
   end
 end
