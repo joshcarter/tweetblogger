@@ -12,7 +12,7 @@ module Blogger
       xml = b.entry(:xmlns => 'http://www.w3.org/2005/Atom') do
         b.title(@title, :type => 'text')
         b.content(:type => 'xhtml') do
-          b.div(@body, :xmlns => 'http://www.w3.org/1999/xhtml')
+          b << @body
         end
       end
       

@@ -9,4 +9,4 @@ twitter:
   username: bobtheman
   password: vedBEpR7kuU3wk
   timeline_url: 'http://twitter.com/statuses/user_timeline.json'
-  search_url: 'http://search.twitter.com/xxxx'
+  search_url: 'http://search.twitter.com/search.json'

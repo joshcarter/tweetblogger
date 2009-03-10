@@ -1,56 +1,45 @@
 require 'twitter'
+require 'blogger'
 require 'builder'
 
 class TweetBlogger
   def initialize(config)
     @config = config
     @blog = Blogger::Blog.new(config.blogger)
-    @user = Twitter::Base.new(config.twitter)
+    @user = Twitter::User.new(config.twitter)
     @search = Twitter::Search.new(config.twitter)
   end
   
   def twitter_activity
     since_id = @config.twitter.since_id
     username = @config.twitter.username
+
+    params = since_id ? { :since_id => since_id } : nil
     
-    if since_id
-      user_timeline = @user.timeline(:since_id => since_id)
-      search = @search.search('#' + username).since(since_id).fetch['results']
-    else
-      user_timeline = @user.timeline(:user)
-      # search = @search.search('#' + username, )  # TODO: HERE
-    end
+    timeline = @user.timeline(params)
+    search = @search.search('#' + username, params)
     
-    # Now merge them into one array
-    
-    # TODO: sort by date here instead of ID
-    
-    all = user_timeline + search
-    all.sort_by { |x,y| x.id.to_i <=> y.id.to_i }
+    all = timeline + search
+    return all.sort { |x,y| x.created_at <=> y.created_at }
   end
   
   def twitter_activity_formatted
-    statuses = twitter_activity
+    tweets = twitter_activity
     b = Builder::XmlMarkup.new(:indent => 2)
     
-    xml = b.div(:class => 'tweet_blogger_post') do
-      statuses.each do |status|
+    xml = b.div(:xmlns => 'http://www.w3.org/1999/xhtml', :class => 'tweet_blogger_post') do
+      tweets.each do |tweet|
+        # Switch class of div based on whether or not our user 
+        # posted the tweet
+        css_class = case tweet.user.screen_name
+        when @config.twitter.username then 'my_tweet'
+        else 'other_tweet'
+        end
         
-        # TODO: switch to common tweet format; change class based on screen_name
-        
-        case status.class.to_s
-        when 'Twitter::Status'
-          b.div(:class => 'user_status') do
-            b.div(status.user.screen_name, :class => 'screen_name')
-            b.div(status.text, :class => 'text')
-            b.div(status.created_at, :class => 'created_at')
-          end
-        when 'Twitter::SearchResult'
-          b.div(:class => 'search_result') do
-            b.div(status.from_user, :class => 'screen_name')
-            b.div(status.text, :class => 'text')
-            b.div(status.created_at, :class => 'created_at')
-          end
+        b.div(:class => css_class) do
+          b.div(tweet.user.screen_name, :class => 'screen_name')
+          b.div(tweet.text, :class => 'text')
+          b.div(tweet.created_at.strftime("%I:%M"), :class => 'created_at')
         end
       end
     end

@@ -1,6 +1,5 @@
-require 'net/http'
+require 'net/https'
 require 'cgi'
-require 'pp'
 
 class HttpHelper
   def self.request(url, params = Hash.new)
