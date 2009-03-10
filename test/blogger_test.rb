@@ -18,22 +18,14 @@ class BloggerTest < Test::Unit::TestCase
   end
   
   def test_can_login
-    @blog.expects(:request).returns(canned_file('blogger_login', :txt))
+    HttpHelper.expects(:request).returns(canned_file('blogger_login', :txt))
     
     @blog.login
   end
   
   def test_failed_login
-    @blog.expects(:request).returns("foo!")
+    HttpHelper.expects(:request).returns("foo!")
     
-    assert_raises RuntimeError do
-      @blog.login
-    end
-  end
-  
-  def test_failed_login_connection
-    Net::HTTP.any_instance.expects(:start).raises("foo!")
-
     assert_raises RuntimeError do
       @blog.login
     end
@@ -41,7 +33,7 @@ class BloggerTest < Test::Unit::TestCase
   
   def test_post
     @blog.expects(:login).returns(nil)
-    @blog.expects(:request).returns(canned_file('blogger_post', :txt))
+    HttpHelper.expects(:request).returns(canned_file('blogger_post', :txt))
 
     @blog.post(@post)
   end

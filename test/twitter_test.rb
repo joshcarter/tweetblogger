@@ -1,40 +1,44 @@
 require 'test/unit'
 require 'rubygems'
-require 'hpricot'
-require 'httparty'
 require 'mocha'
 require 'twitter'
 
 class TwitterTest < Test::Unit::TestCase
   def setup
-    @config = Configuration::load('configuration.yml')[:twitter]
-    @user = Twitter::Base.new(@config[:username], @config[:password])
+    @config = Configuration::load('configuration.yml')
+    @user = Twitter::User.new(@config[:twitter])
+    @search = Twitter::Search.new(@config[:twitter])
   end
-
+  
   # Mix of behavior testing and classic TDD
   def test_statuses
-    @user.expects(:request).returns(canned_file(:timeline))
+    HttpHelper.expects(:request).returns(canned_file(:timeline, :json))
+  
+    statuses = @user.timeline
+  
+    assert_equal "most recent tweet", statuses[0][:text]
+    assert_equal "bar", statuses[1][:text]
+    assert_equal "foo", statuses[2][:text]
 
-    statuses = @user.timeline(:user)
-
-    assert_equal "most recent tweet", statuses[0].text
-    assert_equal "bar", statuses[1].text
-    assert_equal "foo", statuses[2].text
+    assert_equal Time, statuses[0][:created_at].class
   end
   
   def test_statuses_since
-    @user.expects(:request).returns(canned_file(:timeline_since))
-
-    statuses = @user.timeline(:user, :since_id => '707916062')
-
+    HttpHelper.expects(:request).returns(canned_file(:timeline_since, :json))
+  
+    statuses = @user.timeline(:since_id => 707916062)
+  
     assert_equal 3, statuses.length
   end
   
   def test_search
-    Twitter::Search.expects(:get).returns(canned_file(:search, :json))
+    HttpHelper.expects(:request).returns(canned_file(:search, :json))
     
-    search = Twitter::Search.new('#test').fetch
-    assert_equal 'kevinashworth', search['results'][0].from_user
-    assert_equal 'vtld', search['results'][2].from_user
+    search = @search.search('#test')
+    assert_equal 'kevinashworth', search[0][:user][:screen_name]
+    assert_equal 'vtld', search[2][:user][:screen_name]
+    
+    assert_equal Time, search[0][:created_at].class
+    assert search[0][:created_at] > search[1][:created_at]
   end
 end

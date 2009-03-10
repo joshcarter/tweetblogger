@@ -1,42 +1,21 @@
-require 'net/https'
+require 'http_helper'
 
 module Blogger
   class Blog
-    def initialize(params)
-      @username = params[:username]
-      @password = params[:password]
-      @blog_id = params[:blogid]
-      @login_url = URI::parse params[:login_url]
-      @post_url = URI::parse params[:post_url]
+    def initialize(config)
+      @config = config
       @auth_token = nil
     end
     
-    def request(url, params = Hash.new)
-      http = Net::HTTP.new(url.host, url.port)
-      http.use_ssl = (url.scheme == 'https')
-      response = nil
-    
-      http.start do |http|
-        request = Net::HTTP::Post.new(url.path, params[:headers])
-        request.form_data = params[:form_data] if params[:form_data]
-        request.body = params[:body] if params[:body]
-        response = http.request(request)
-      end
-
-      raise "Error #{response.code}: #{response.message}" unless response.is_a?(Net::HTTPSuccess)
-
-      return response.body
-    end
-  
     def login
       form_data = {
-        'Email' => @username,
-        'Passwd' => @password,
+        'Email' => @config[:username],
+        'Passwd' => @config[:password],
         'source' => 'joshcarter.com-blogger.rb-1.0',
         'service' => 'blogger'
       }
     
-      response = request(@login_url, :form_data => form_data)
+      response = HttpHelper::request(@config[:login_url], :type => :post, :form_data => form_data)
       
       # One line will contain "Auth=...", we need to pull that out
       response.each_line do |line|
@@ -58,7 +37,7 @@ module Blogger
         'Content-Type' => 'application/atom+xml'
       }
       
-      response = request(@post_url, :body => post.atom_formatted, :headers => headers)
+      response = HttpHelper::request(@config[:post_url], :type => :post, :body => post.atom_formatted, :headers => headers)
     end
   end
 end
