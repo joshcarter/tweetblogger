@@ -1,21 +1,22 @@
 require 'yaml'
+require 'ostruct'
 
 class Hash
-  def symbolize_keys
-    new_hash = Hash.new
+  def to_struct
+    struct = OpenStruct.new
     
     self.each_pair do |key, val|
-      val = val.symbolize_keys if val.class == Hash
-      new_hash[key.to_sym] = val      
+      val = val.to_struct if val.class == Hash
+      struct.send((key + '=').to_sym, val)
     end
     
-    return new_hash
+    return struct
   end
 end
 
 class Configuration
   def self.load(file)
-    YAML::load(File.read(file)).symbolize_keys
+    YAML::load(File.read(file)).to_struct
   end
 end  
 

@@ -10,7 +10,7 @@ class HttpHelperTest < Test::Unit::TestCase
     assert_equal @url, @url.with_parameters(nil)
     assert_equal @url, @url.with_parameters(Hash.new)
 
-    # One param
+    # One param (string)
     assert_equal "#{@url}?foo=bar", 
                  @url.with_parameters(:foo => 'bar')
 
@@ -27,28 +27,50 @@ class HttpHelperTest < Test::Unit::TestCase
                  @url.with_parameters(:foo => 'bar', :baz => '%%&&')
   end
 
-  def test_create_get_request
-    Net::HTTP::Get.expects(:new)
-    Net::HTTP.any_instance.expects(:start).returns(nil)
-    HttpHelper::request @url, :type => :get
+  # Classic TDD style
+  def test_http_request_with_stub
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    response.stubs(:body).returns('foo')
+    Net::HTTP.any_instance.stubs(:request).returns(response)
+    
+    body = HttpHelper::request @url
+    
+    assert_equal 'foo', body
   end
 
-  def test_create_post_request
-    Net::HTTP::Post.expects(:new)
-    Net::HTTP.any_instance.expects(:start).returns(nil)
-    HttpHelper::request @url, :type => :post
-  end
-
-  def test_http_request
-    Net::HTTP.any_instance.expects(:start).returns(nil)
+  # Mock style
+  def test_http_request_with_mock
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    response.expects(:body)
+    Net::HTTP.any_instance.expects(:request).returns(response)
+    
     HttpHelper::request @url
   end
 
-  def test_failed_http_start
-    Net::HTTP.any_instance.expects(:start).raises("foo!")
+  def test_http_request_with_bad_response
+    response = Net::HTTPInternalServerError.new('1.1', '500', 'Totally uncool')
+    Net::HTTP.any_instance.expects(:request).returns(response)
 
     assert_raises RuntimeError do
       response = HttpHelper::request @url
     end
+  end
+
+  def test_create_get_request
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    response.expects(:body)
+    Net::HTTP::Get.expects(:new)
+    Net::HTTP.any_instance.expects(:request).returns(response)
+
+    HttpHelper::request @url, :type => :get
+  end
+
+  def test_create_post_request
+    response = Net::HTTPOK.new('1.1', '200', 'OK')
+    response.expects(:body)
+    Net::HTTP::Post.expects(:new)
+    Net::HTTP.any_instance.expects(:request).returns(response)
+
+    HttpHelper::request @url, :type => :post
   end
 end

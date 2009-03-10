@@ -9,23 +9,26 @@ module Twitter
       @config = config
     end
     
-    def search(query)
-      json = HttpHelper::request @config[:search_url].with_parameters(:q => query)
+    def search(query, params = nil)
+      params ||= Hash.new
+      params[:q] = query
+      
+      json = HttpHelper::request @config.search_url.with_parameters(params)
 
       tweets = Array.new
 
       JSON::parse(json)['results'].each do |tweet|
-        tweet = tweet.symbolize_keys
-        # make search result look a little more like a normal tweet
-        tweet[:user] = {
-          :profile_image_url => tweet[:profile_image_url],
-          :id => tweet[:from_user_id],
-          :screen_name => tweet[:from_user],
-          :name => tweet[:from_user]
+        # Make search result look a little more like a normal tweet
+        tweet['user'] = {
+          'profile_image_url' => tweet['profile_image_url'],
+          'id' => tweet['from_user_id'],
+          'screen_name' => tweet['from_user'],
+          'name' => tweet['from_user']
         }
-        tweet[:created_at] = Time.parse tweet[:created_at]
+        # Convert time to proper Time object
+        tweet['created_at'] = Time.parse tweet['created_at']
           
-        tweets << tweet
+        tweets << tweet.to_struct
       end
       
       return tweets

@@ -4,25 +4,26 @@ require 'builder'
 class TweetBlogger
   def initialize(config)
     @config = config
-    @blog = Blogger::Blog.new(config[:blogger])
-    @user = Twitter::Base.new(config[:twitter][:username], config[:twitter][:password])
+    @blog = Blogger::Blog.new(config.blogger)
+    @user = Twitter::Base.new(config.twitter)
+    @search = Twitter::Search.new(config.twitter)
   end
   
   def twitter_activity
-    since_id = @config[:twitter][:since_id]
-    username = @config[:twitter][:username]
+    since_id = @config.twitter.since_id
+    username = @config.twitter.username
     
     if since_id
-      user_timeline = @user.timeline(:user, :since_id => since_id)
-      search = Twitter::Search.new('#' + username).since(since_id).fetch['results']
+      user_timeline = @user.timeline(:since_id => since_id)
+      search = @search.search('#' + username).since(since_id).fetch['results']
     else
       user_timeline = @user.timeline(:user)
-      search = Twitter::Search.new('#' + username).fetch['results']
+      # search = @search.search('#' + username, )  # TODO: HERE
     end
     
     # Now merge them into one array
     
-    # TODO: sort by date here
+    # TODO: sort by date here instead of ID
     
     all = user_timeline + search
     all.sort_by { |x,y| x.id.to_i <=> y.id.to_i }
@@ -34,6 +35,9 @@ class TweetBlogger
     
     xml = b.div(:class => 'tweet_blogger_post') do
       statuses.each do |status|
+        
+        # TODO: switch to common tweet format; change class based on screen_name
+        
         case status.class.to_s
         when 'Twitter::Status'
           b.div(:class => 'user_status') do

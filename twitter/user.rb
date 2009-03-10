@@ -13,15 +13,15 @@ module Twitter
       params = Hash.new if params == nil
       params[:count] = 200 unless params[:count]
       
-      json = HttpHelper::request @config[:timeline_url].with_parameters(params), :auth => [@config[:username], @config[:password]]
+      json = HttpHelper::request @config.timeline_url.with_parameters(params), :auth => [@config.username, @config.password]
 
       tweets = Array.new
 
       JSON::parse(json).each do |tweet|
-        tweet = tweet.symbolize_keys
-        tweet[:created_at] = Time.parse tweet[:created_at]
+        # Change time to proper Time object
+        tweet['created_at'] = Time.parse tweet['created_at']
         
-        tweets << tweet
+        tweets << tweet.to_struct
       end
       
       return tweets

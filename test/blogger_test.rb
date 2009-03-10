@@ -6,7 +6,7 @@ require 'rexml/document'
 class BloggerTest < Test::Unit::TestCase
   def setup
     @config = Configuration::load('configuration.yml')
-    @blog = Blogger::Blog.new(@config[:blogger])
+    @blog = Blogger::Blog.new(@config.blogger)
     @post = Blogger::Post.new('title goes here', 'body goes here')
   end
   

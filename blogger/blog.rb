@@ -9,13 +9,13 @@ module Blogger
     
     def login
       form_data = {
-        'Email' => @config[:username],
-        'Passwd' => @config[:password],
+        'Email' => @config.username,
+        'Passwd' => @config.password,
         'source' => 'joshcarter.com-blogger.rb-1.0',
         'service' => 'blogger'
       }
     
-      response = HttpHelper::request(@config[:login_url], :type => :post, :form_data => form_data)
+      response = HttpHelper::request(@config.login_url, :type => :post, :form_data => form_data)
       
       # One line will contain "Auth=...", we need to pull that out
       response.each_line do |line|
@@ -37,7 +37,7 @@ module Blogger
         'Content-Type' => 'application/atom+xml'
       }
       
-      response = HttpHelper::request(@config[:post_url], :type => :post, :body => post.atom_formatted, :headers => headers)
+      response = HttpHelper::request(@config.post_url, :type => :post, :body => post.atom_formatted, :headers => headers)
     end
   end
 end
