@@ -5,7 +5,7 @@ require 'rexml/document'
 
 class BloggerTest < Test::Unit::TestCase
   def setup
-    @config = Configuration::load('configuration.yml')
+    @config = Configuration::load('configuration.yaml')
     @blog = Blogger::Blog.new(@config.blogger)
     @post = Blogger::Post.new('title goes here', 'body goes here')
   end
@@ -14,7 +14,7 @@ class BloggerTest < Test::Unit::TestCase
     # Create XML doc from ATOM-formatted post, dig through it
     doc = REXML::Document.new @post.atom_formatted
     assert_equal 'title goes here', doc.elements.to_a('entry/title')[0].text
-    assert_equal 'body goes here',  doc.elements.to_a('entry/content/div')[0].text
+    assert_equal 'body goes here',  doc.elements.to_a('entry/content')[0].text
   end
   
   def test_can_login

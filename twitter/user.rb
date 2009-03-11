@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'json'
 require 'http_helper'
 require 'configuration'
@@ -20,6 +21,7 @@ module Twitter
       JSON::parse(json).each do |tweet|
         # Change time to proper Time object
         tweet['created_at'] = Time.parse tweet['created_at']
+        tweet['twitter_id'] = tweet['id']
         
         tweets << tweet.to_struct
       end

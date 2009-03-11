@@ -5,7 +5,7 @@ require 'twitter'
 
 class TwitterTest < Test::Unit::TestCase
   def setup
-    @config = Configuration::load('configuration.yml')
+    @config = Configuration::load('configuration.yaml')
     @user = Twitter::User.new(@config.twitter)
     @search = Twitter::Search.new(@config.twitter)
   end
@@ -22,6 +22,7 @@ class TwitterTest < Test::Unit::TestCase
     assert_equal "foo", tweets[2].text
 
     assert_equal Time, tweets[0].created_at.class
+    assert_equal 1295336677, tweets[0].twitter_id
   end
   
   def test_tweets_since
@@ -31,6 +32,14 @@ class TwitterTest < Test::Unit::TestCase
     tweets = @user.timeline(:since_id => 707916062)
   
     assert_equal 3, tweets.length
+  end
+  
+  def test_tweets_since_with_no_results
+    HttpHelper.stubs(:request).returns(canned_file(:timeline_no_results, :json))
+  
+    tweets = @user.timeline
+    assert_equal Array, tweets.class
+    assert_equal 0, tweets.length
   end
   
   def test_search
@@ -51,5 +60,14 @@ class TwitterTest < Test::Unit::TestCase
 
     search = @search.search('#test', :since_id => 707916062)
     assert_equal 1, search.length
+  end
+
+  def test_search_no_results
+    HttpHelper.expects(:request).returns(canned_file(:search_no_results, :json))
+    String.any_instance.expects(:with_parameters).with(:q => '#test').returns('foo')
+
+    search = @search.search('#test')
+    assert_equal Array, search.class
+    assert_equal 0, search.length
   end
 end

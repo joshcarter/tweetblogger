@@ -3,11 +3,14 @@ require 'blogger'
 require 'builder'
 
 class TweetBlogger
+  attr_reader :max_id
+  
   def initialize(config)
     @config = config
     @blog = Blogger::Blog.new(config.blogger)
     @user = Twitter::User.new(config.twitter)
     @search = Twitter::Search.new(config.twitter)
+    @max_id = nil
   end
   
   def twitter_activity
@@ -20,12 +23,16 @@ class TweetBlogger
     search = @search.search('#' + username, params)
     
     all = timeline + search
-    return all.sort { |x,y| x.created_at <=> y.created_at }
+    all = all.sort { |x,y| x.created_at <=> y.created_at }
+    @max_id = all.last.twitter_id unless all.empty?
+    return all
   end
   
   def twitter_activity_formatted
     tweets = twitter_activity
-    b = Builder::XmlMarkup.new(:indent => 2)
+    return nil if tweets.empty?
+    
+    b = Builder::XmlMarkup.new # (:indent => 2)
     
     xml = b.div(:xmlns => 'http://www.w3.org/1999/xhtml', :class => 'tweet_blogger_post') do
       tweets.each do |tweet|
@@ -45,5 +52,14 @@ class TweetBlogger
     end
 
     return xml
+  end
+  
+  def post_tweets_to_blogger
+    activity = twitter_activity_formatted
+    return if activity.nil?
+
+    title = Time.now.strftime("%I:%M")
+    post = Blogger::Post.new(title, activity)
+    @blog.post post
   end
 end

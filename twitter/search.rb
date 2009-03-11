@@ -27,7 +27,8 @@ module Twitter
         }
         # Convert time to proper Time object
         tweet['created_at'] = Time.parse tweet['created_at']
-          
+        tweet['twitter_id'] = tweet['id']
+        
         tweets << tweet.to_struct
       end
       
