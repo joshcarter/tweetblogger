@@ -1,0 +1,12 @@
+blogger:
+  username: joshcarter2006@gmail.com
+  password: fptk5rzP
+  blog_id: 10881293
+  login_url: https://www.google.com:443/accounts/ClientLogin
+  post_url: https://www.blogger.com/feeds/10881293/posts/default
+
+twitter:
+  username: bobtheman
+  password: yo3YAYBNrf3N
+  timeline_url: 'http://twitter.com/statuses/user_timeline.json'
+  search_url: 'http://search.twitter.com/search.json'
