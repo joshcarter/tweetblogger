@@ -30,7 +30,7 @@ class TweetBloggerTest < Test::Unit::TestCase
   def test_get_twitter_activity
     tweet_blogger = TweetBlogger.new(@config)
   
-    Twitter::User.any_instance.expects(:timeline).returns(make_tweets(10, @config.twitter.username))
+    Twitter::Timeline.any_instance.expects(:timeline).returns(make_tweets(10, @config.twitter.username))
     Twitter::Search.any_instance.expects(:search).returns(make_tweets(10, 'bob'))
   
     statusus = tweet_blogger.twitter_activity
@@ -40,7 +40,7 @@ class TweetBloggerTest < Test::Unit::TestCase
   def test_twitter_activity_with_no_tweets
     tweet_blogger = TweetBlogger.new(@config)
   
-    Twitter::User.any_instance.expects(:timeline).returns([])
+    Twitter::Timeline.any_instance.expects(:timeline).returns([])
     Twitter::Search.any_instance.expects(:search).returns([])
       
     statusus = tweet_blogger.twitter_activity
@@ -50,7 +50,7 @@ class TweetBloggerTest < Test::Unit::TestCase
   def test_tweet_activity_formatting
     tweet_blogger = TweetBlogger.new(@config)
     
-    Twitter::User.any_instance.expects(:timeline).returns(make_tweets(10, @config.twitter.username))
+    Twitter::Timeline.any_instance.expects(:timeline).returns(make_tweets(10, @config.twitter.username))
     Twitter::Search.any_instance.expects(:search).returns(make_tweets(10, 'bob'))
     
     xml = tweet_blogger.twitter_activity_formatted
@@ -62,7 +62,7 @@ class TweetBloggerTest < Test::Unit::TestCase
   def test_max_id_seen
     tweet_blogger = TweetBlogger.new(@config)
   
-    Twitter::User.any_instance.expects(:timeline).returns(make_tweets(10, @config.twitter.username))
+    Twitter::Timeline.any_instance.expects(:timeline).returns(make_tweets(10, @config.twitter.username))
     Twitter::Search.any_instance.expects(:search).returns([])
   
     tweet_blogger.twitter_activity
@@ -72,7 +72,7 @@ class TweetBloggerTest < Test::Unit::TestCase
   def test_no_formatted_stuff_if_no_tweets
     tweet_blogger = TweetBlogger.new(@config)
   
-    Twitter::User.any_instance.expects(:timeline).returns([])
+    Twitter::Timeline.any_instance.expects(:timeline).returns([])
     Twitter::Search.any_instance.expects(:search).returns([])
       
     xml = tweet_blogger.twitter_activity_formatted
@@ -80,7 +80,7 @@ class TweetBloggerTest < Test::Unit::TestCase
   end
 
   def test_fetch_tweets_and_post_to_blog
-    Twitter::User.any_instance.expects(:timeline).returns(make_tweets(10, @config.twitter.username))
+    Twitter::Timeline.any_instance.expects(:timeline).returns(make_tweets(10, @config.twitter.username))
     Twitter::Search.any_instance.expects(:search).returns(make_tweets(10, 'bob'))
     Blogger::Blog.any_instance.expects(:post).returns(nil)
     
@@ -88,7 +88,7 @@ class TweetBloggerTest < Test::Unit::TestCase
   end
   
   def test_no_post_if_no_tweets
-    Twitter::User.any_instance.expects(:timeline).returns([])
+    Twitter::Timeline.any_instance.expects(:timeline).returns([])
     Twitter::Search.any_instance.expects(:search).returns([])
     Blogger::Blog.any_instance.expects(:post).never
     

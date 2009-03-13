@@ -6,7 +6,7 @@ require 'twitter'
 class TwitterTest < Test::Unit::TestCase
   def setup
     @config = Configuration::load('configuration.yaml')
-    @user = Twitter::User.new(@config.twitter)
+    @timeline = Twitter::Timeline.new(@config.twitter)
     @search = Twitter::Search.new(@config.twitter)
   end
   
@@ -15,7 +15,7 @@ class TwitterTest < Test::Unit::TestCase
     HttpHelper.expects(:request).returns(canned_file(:timeline, :json))
     String.any_instance.expects(:with_parameters).with(:count => 200).returns('foo')
   
-    tweets = @user.timeline
+    tweets = @timeline.timeline('bob')
   
     assert_equal "most recent tweet", tweets[0].text
     assert_equal "bar", tweets[1].text
@@ -29,7 +29,7 @@ class TwitterTest < Test::Unit::TestCase
     HttpHelper.expects(:request).returns(canned_file(:timeline_since, :json))
     String.any_instance.expects(:with_parameters).with(:count => 200, :since_id => 707916062).returns('foo')
   
-    tweets = @user.timeline(:since_id => 707916062)
+    tweets = @timeline.timeline('bob', :since_id => 707916062)
   
     assert_equal 3, tweets.length
   end
@@ -37,9 +37,17 @@ class TwitterTest < Test::Unit::TestCase
   def test_tweets_since_with_no_results
     HttpHelper.stubs(:request).returns(canned_file(:timeline_no_results, :json))
   
-    tweets = @user.timeline
+    tweets = @timeline.timeline('bob')
     assert_equal Array, tweets.class
     assert_equal 0, tweets.length
+  end
+  
+  def test_multiple_timelines
+    HttpHelper.expects(:request).times(3).returns(canned_file(:timeline, :json))
+  
+    ['bob', 'fred', 'joe'].each do |screen_name|
+      tweets = @timeline.timeline(screen_name)
+    end
   end
   
   def test_search

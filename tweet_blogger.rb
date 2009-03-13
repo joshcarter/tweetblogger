@@ -8,7 +8,7 @@ class TweetBlogger
   def initialize(config)
     @config = config
     @blog = Blogger::Blog.new(config.blogger)
-    @user = Twitter::User.new(config.twitter)
+    @timeline = Twitter::Timeline.new(config.twitter)
     @search = Twitter::Search.new(config.twitter)
     @max_id = nil
   end
@@ -18,11 +18,19 @@ class TweetBlogger
     username = @config.twitter.username
 
     params = since_id ? { :since_id => since_id } : nil
+
+    timeline = Array.new
+    search = Array.new
     
-    timeline = @user.timeline(params)
-    search = @search.search('#' + username, params)
+    @config.twitter.timelines.each do |screen_name|
+      timeline << @timeline.timeline(screen_name, params)
+    end
+
+    @config.twitter.searches.each do |query|
+      search << @search.search(query, params)
+    end
     
-    all = timeline + search
+    all = timeline.flatten + search.flatten
     all = all.sort { |x,y| x.created_at <=> y.created_at }
     @max_id = all.last.twitter_id unless all.empty?
     return all
@@ -38,9 +46,10 @@ class TweetBlogger
       tweets.each do |tweet|
         # Switch class of div based on whether or not our user 
         # posted the tweet
-        css_class = case tweet.user.screen_name
-        when @config.twitter.username then 'my_tweet'
-        else 'other_tweet'
+        css_class = if @config.twitter.timelines.include? tweet.user.screen_name.downcase
+          'my_tweet'
+        else
+          'other_tweet'
         end
         
         b.div(:class => css_class) do

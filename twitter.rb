@@ -1,4 +1,4 @@
-require 'twitter/user'
+require 'twitter/timeline'
 require 'twitter/search'
 
 module Twitter

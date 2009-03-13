@@ -1,12 +1,14 @@
 blogger:
   username: joshcarter2006@gmail.com
-  password: foo
+  password: xxx
   blog_id: 10881293
   login_url: https://www.google.com:443/accounts/ClientLogin
   post_url: https://www.blogger.com/feeds/10881293/posts/default
 
 twitter:
   username: bobtheman
-  password: foo
-  timeline_url: 'http://twitter.com/statuses/user_timeline.json'
+  password: xxx
+  timelines: ['24hotv', '24hotvs', '24hotvb']
+  searches: ['#24hotv']
+  timeline_url: 'http://twitter.com/statuses/user_timeline'
   search_url: 'http://search.twitter.com/search.json'

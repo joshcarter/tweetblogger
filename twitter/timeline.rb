@@ -5,16 +5,16 @@ require 'configuration'
 require 'time'
 
 module Twitter
-  class User
+  class Timeline
     def initialize(config)
       @config = config
     end
 
-    def timeline(params = nil)
+    def timeline(user, params = nil)
       params = Hash.new if params == nil
       params[:count] = 200 unless params[:count]
       
-      json = HttpHelper::request @config.timeline_url.with_parameters(params), :auth => [@config.username, @config.password]
+      json = HttpHelper::request "#{@config.timeline_url}/#{user}.json".with_parameters(params), :auth => [@config.username, @config.password]
 
       tweets = Array.new
 
